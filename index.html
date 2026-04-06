@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS LINK | Custom Alias</title>
+    
+    <meta name="google-site-verification" content="08786ed5dd075446" />
+    
+    <title>NEXUS LINK | Бесплатное сокращение ссылок</title>
+    <meta name="description" content="NEXUS LINK — быстрый сервис сокращения ссылок с кастомными псевдонимами. Создавайте короткие URL мгновенно.">
+    
     <style>
         :root {
             --bg-color: #08080c;
@@ -51,58 +56,21 @@
         }
 
         .input-box { margin-bottom: 20px; }
-        
-        label {
-            display: block;
-            font-size: 10px;
-            color: var(--accent-cyan);
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid #333;
-            border-radius: 8px;
-            color: #fff;
-            outline: none;
-            transition: 0.3s;
-        }
-
+        label { display: block; font-size: 10px; color: var(--accent-cyan); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        input { width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.7); border: 1px solid #333; border-radius: 8px; color: #fff; outline: none; transition: 0.3s; }
         input:focus { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0, 243, 255, 0.2); }
 
         .btn {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, var(--accent-cyan), #0081cc);
-            border: none;
-            border-radius: 10px;
-            color: #000;
-            font-weight: 900;
-            cursor: pointer;
-            text-transform: uppercase;
-            box-shadow: 0 5px 0 #005a8f;
-            transition: 0.1s;
+            width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent-cyan), #0081cc);
+            border: none; border-radius: 10px; color: #000; font-weight: 900; cursor: pointer;
+            text-transform: uppercase; box-shadow: 0 5px 0 #005a8f; transition: 0.1s;
         }
-
         .btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #005a8f; }
 
         #loader { display: none; margin: 15px auto; width: 30px; height: 30px; border: 3px solid #333; border-top-color: var(--accent-cyan); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .result-area {
-            display: none;
-            margin-top: 25px;
-            padding: 15px;
-            background: rgba(0, 243, 255, 0.1);
-            border: 1px dashed var(--accent-cyan);
-            border-radius: 10px;
-            text-align: center;
-        }
-
+        .result-area { display: none; margin-top: 25px; padding: 15px; background: rgba(0, 243, 255, 0.1); border: 1px dashed var(--accent-cyan); border-radius: 10px; text-align: center; }
         .error { color: #ff4d4d; font-size: 13px; margin-top: 15px; text-align: center; display: none; }
     </style>
 </head>
@@ -113,47 +81,32 @@
         <h1>NEXUS LINK</h1>
 
         <div class="input-box">
-            <label>Куда должна вести ссылка?</label>
-            <input type="url" id="longUrl" placeholder="https://youtube.com/..." required>
+            <label>Ссылка для сокращения</label>
+            <input type="url" id="longUrl" placeholder="https://..." required>
         </div>
 
         <div class="input-box">
-            <label>Ваше имя (например: my-video)</label>
-            <input type="text" id="alias" placeholder="Только буквы и цифры">
+            <label>Ваш Alias (необязательно)</label>
+            <input type="text" id="alias" placeholder="Например: mylink">
         </div>
 
-        <button class="btn" onclick="shorten()">СОКРАТИТЬ</button>
+        <button class="btn sound-btn" onclick="shorten()">СОКРАТИТЬ</button>
         
         <div id="loader"></div>
         <div class="error" id="error"></div>
 
         <div class="result-area" id="resultArea">
-            <div style="font-size: 11px; margin-bottom: 8px; color: var(--accent-cyan);">ВАША ССЫЛКА ГОТОВА:</div>
+            <div style="font-size: 11px; margin-bottom: 8px; color: var(--accent-cyan);">ГОТОВО:</div>
             <a href="#" id="finalLink" target="_blank" style="color: #fff; font-weight: bold; font-size: 18px; text-decoration: none;"></a>
             <br><br>
-            <button onclick="copy()" style="background: var(--accent-purple); color: white; border: none; padding: 7px 15px; border-radius: 5px; cursor: pointer; font-size: 12px;">Копировать</button>
+            <button class="sound-btn" onclick="copy()" style="background: var(--accent-purple); color: white; border: none; padding: 7px 15px; border-radius: 5px; cursor: pointer;">Копировать</button>
         </div>
     </div>
 </div>
 
 <script>
-    // Звуковой движок
-    const a = new (window.AudioContext || window.webkitAudioContext)();
-    function play(f, d) {
-        const o = a.createOscillator(), g = a.createGain();
-        o.frequency.value = f; g.gain.value = 0.1;
-        o.connect(g); g.connect(a.destination);
-        o.start(); g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + d);
-        o.stop(a.currentTime + d);
-    }
-
-    // 3D Наклон
-    document.addEventListener('mousemove', (e) => {
-        const p = document.getElementById('panel');
-        const x = (window.innerWidth / 2 - e.pageX) / 30;
-        const y = (window.innerHeight / 2 - e.pageY) / 30;
-        p.style.transform = `rotateY(${-x}deg) rotateX(${y}deg)`;
-    });
+    // --- УЛУЧШЕННАЯ АУДИО СИСТЕМА И 3D ---
+    let audioCtx=null;function initAudio(){if(!audioCtx){audioCtx=new(window.AudioContext||window.webkitAudioContext)()}if(audioCtx.state==='suspended'){audioCtx.resume()}}function playSound(freq,type,dur,vol){if(!audioCtx)return;const osc=audioCtx.createOscillator();const gain=audioCtx.createGain();osc.type=type;osc.frequency.setValueAtTime(freq,audioCtx.currentTime);gain.gain.setValueAtTime(0.001,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(vol,audioCtx.currentTime+0.02);gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);osc.connect(gain);gain.connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+dur)}document.addEventListener('click',initAudio,{once:true});document.querySelectorAll('.btn, .sound-btn').forEach(btn=>{btn.addEventListener('mouseenter',()=>{initAudio();playSound(800,'sine',0.1,0.1)});btn.addEventListener('mousedown',()=>{playSound(150,'square',0.15,0.2)})});document.querySelectorAll('.panel').forEach(card=>{card.addEventListener('mouseenter',()=>{initAudio();playSound(1200,'sine',0.05,0.03);setTimeout(()=>playSound(1600,'sine',0.04,0.02),50)});card.addEventListener('mousemove',(e)=>{const rect=card.getBoundingClientRect();const x=e.clientX-rect.left;const y=e.clientY-rect.top;const dx=x-rect.width/2;const dy=y-rect.height/2;card.style.transform=`rotateY(${dx/15}deg) rotateX(${-dy/15}deg) translateZ(20px)`});card.addEventListener('mouseleave',()=>{card.style.transform='rotateY(0deg) rotateX(0deg) translateZ(0px)'})});(function(){let link=document.querySelector("link[rel*='icon']");if(!link){link=document.createElement('link');link.rel='icon';document.head.appendChild(link)}link.href='favicon.ico';link.type='image/x-icon'})();
 
     async function shorten() {
         const url = document.getElementById('longUrl').value;
@@ -163,32 +116,25 @@
         const loader = document.getElementById('loader');
 
         if (!url) return;
-        play(400, 0.1);
-
         resDiv.style.display = 'none';
         errDiv.style.display = 'none';
         loader.style.display = 'block';
 
-        // Формируем запрос к is.gd через стабильный прокси corsproxy.io
         let target = `https://is.gd/create.php?format=json&url=${encodeURIComponent(url)}`;
         if (alias) target += `&shorturl=${encodeURIComponent(alias)}`;
-        
         const finalUrl = `https://corsproxy.io/?${encodeURIComponent(target)}`;
 
         try {
             const response = await fetch(finalUrl);
             const data = await response.json();
-
             if (data.shorturl) {
-                play(800, 0.2);
                 document.getElementById('finalLink').textContent = data.shorturl;
                 document.getElementById('finalLink').href = data.shorturl;
                 resDiv.style.display = 'block';
             } else {
-                throw new Error(data.errormessage || "Это имя уже занято или недопустимо");
+                throw new Error(data.errormessage || "Ошибка");
             }
         } catch (e) {
-            play(200, 0.3);
             errDiv.textContent = "Ошибка: " + e.message;
             errDiv.style.display = 'block';
         } finally {
@@ -199,7 +145,6 @@
     function copy() {
         const t = document.getElementById('finalLink').textContent;
         navigator.clipboard.writeText(t);
-        play(1200, 0.1);
         alert("Скопировано!");
     }
 </script>

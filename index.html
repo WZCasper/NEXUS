@@ -7,7 +7,7 @@
     <style>
         :root {
             --bg-color: #08080c;
-            --panel-bg: rgba(20, 20, 30, 0.8);
+            --panel-bg: rgba(20, 20, 30, 0.9);
             --accent-cyan: #00f3ff;
             --accent-purple: #bc13fe;
             --text-main: #ffffff;
@@ -19,190 +19,128 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             background-image: 
-                radial-gradient(circle at 15% 50%, rgba(188, 19, 254, 0.15), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.15), transparent 25%);
+                radial-gradient(circle at 15% 50%, rgba(188, 19, 254, 0.1), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.1), transparent 25%);
         }
 
-        /* Фоновая сетка */
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: -1;
-            transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
-            animation: gridMove 20s linear infinite;
-        }
-
-        @keyframes gridMove {
-            0% { transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-200px); }
-            100% { transform: perspective(500px) rotateX(60deg) translateY(40px) translateZ(-200px); }
-        }
-
-        /* 3D Контейнер */
+        /* 3D Сцена */
         .scene {
             perspective: 1200px;
-            width: 100%;
-            max-width: 500px;
-            padding: 20px;
+            width: 90%;
+            max-width: 450px;
         }
 
         .panel {
             background: var(--panel-bg);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 24px;
             padding: 40px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.05);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
             transform-style: preserve-3d;
             transition: transform 0.1s ease-out;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            transform: translateZ(40px);
-        }
-
         .header h1 {
-            font-size: 32px;
-            font-weight: 900;
-            letter-spacing: 2px;
+            font-size: 28px;
+            text-align: center;
             background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            transform: translateZ(40px);
         }
 
-        .header p {
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
-        /* Инпуты */
         .input-group {
-            margin-bottom: 20px;
+            margin: 20px 0;
             transform: translateZ(30px);
         }
 
-        .input-group label {
+        label {
             display: block;
-            font-size: 12px;
+            font-size: 11px;
             color: var(--accent-cyan);
             margin-bottom: 8px;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         input {
             width: 100%;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(0, 243, 255, 0.2);
-            border-radius: 10px;
-            color: white;
-            font-size: 14px;
-            outline: none;
-            transition: all 0.3s;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
-        }
-
-        input:focus {
-            border-color: var(--accent-purple);
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 0 15px rgba(188, 19, 254, 0.3);
-        }
-
-        /* 3D Кнопка */
-        .btn-3d {
-            width: 100%;
-            padding: 18px;
-            margin-top: 10px;
-            font-size: 16px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #fff;
-            background: linear-gradient(to bottom, #10b981, #059669);
-            border: none;
+            padding: 14px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            cursor: pointer;
-            box-shadow: 0 6px 0 #047857, 0 15px 20px rgba(0, 0, 0, 0.4);
-            transform: translateZ(50px);
-            transition: all 0.1s;
-        }
-
-        .btn-3d:hover {
-            background: linear-gradient(to bottom, #34d399, #10b981);
-            transform: translateZ(50px) translateY(2px);
-            box-shadow: 0 4px 0 #047857, 0 10px 15px rgba(0, 0, 0, 0.4);
-        }
-
-        .btn-3d:active {
-            transform: translateZ(50px) translateY(6px);
-            box-shadow: 0 0 0 #047857, 0 5px 5px rgba(0, 0, 0, 0.4);
-        }
-
-        /* Результат */
-        .result-box {
-            margin-top: 30px;
-            padding: 20px;
-            background: rgba(0, 243, 255, 0.1);
-            border: 1px solid var(--accent-cyan);
-            border-radius: 10px;
-            text-align: center;
-            transform: translateZ(40px);
-            display: none;
-            animation: fadeIn 0.3s ease forwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateZ(40px) translateY(-10px); }
-            to { opacity: 1; transform: translateZ(40px) translateY(0); }
-        }
-
-        .result-link {
-            display: block;
-            font-size: 18px;
-            color: var(--accent-cyan);
-            font-weight: bold;
-            text-decoration: none;
-            margin-bottom: 15px;
-            word-break: break-all;
-        }
-
-        .btn-copy {
-            background: var(--accent-purple);
             color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
+            outline: none;
             transition: 0.3s;
         }
 
-        .btn-copy:hover {
-            filter: brightness(1.2);
-            box-shadow: 0 0 10px var(--accent-purple);
+        input:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+        }
+
+        .btn-3d {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #00f3ff, #0081cc);
+            border: none;
+            border-radius: 12px;
+            color: #000;
+            font-weight: 900;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 6px 0 #005a8f;
+            transform: translateZ(50px);
+            transition: 0.1s;
+        }
+
+        .btn-3d:active {
+            transform: translateZ(50px) translateY(4px);
+            box-shadow: 0 2px 0 #005a8f;
+        }
+
+        .result-box {
+            display: none;
+            margin-top: 25px;
+            padding: 15px;
+            background: rgba(0, 243, 255, 0.05);
+            border: 1px dashed var(--accent-cyan);
+            border-radius: 12px;
+            text-align: center;
+            transform: translateZ(20px);
         }
 
         .error-msg {
-            color: #ef4444;
-            font-size: 14px;
-            margin-top: 15px;
             display: none;
-            transform: translateZ(30px);
+            color: #ff4d4d;
+            font-size: 13px;
+            margin-top: 15px;
+            text-align: center;
         }
+
+        /* Анимация загрузки */
+        .loader {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -211,172 +149,103 @@
     <div class="panel" id="mainPanel">
         <div class="header">
             <h1>NEXUS LINK</h1>
-            <p>System Online // Generate Short URL</p>
         </div>
 
-        <div class="input-group sound-hover">
-            <label>Исходная ссылка (URL)</label>
-            <input type="url" id="longUrl" placeholder="https://example.com/very/long/path" required>
+        <div class="input-group">
+            <label>Ссылка для сокращения</label>
+            <input type="url" id="longUrl" placeholder="https://example.com" required>
         </div>
 
-        <div class="input-group sound-hover">
-            <label>Свое имя ссылки (Необязательно)</label>
-            <input type="text" id="customAlias" placeholder="my-custom-name">
-            <span style="font-size: 10px; color: #666; display: block; margin-top: 5px;">Разрешены только буквы, цифры и дефисы</span>
+        <div class="input-group">
+            <label>Ваше имя ссылки (alias)</label>
+            <input type="text" id="customAlias" placeholder="my-link-name">
         </div>
 
-        <button class="btn-3d sound-btn" onclick="shortenUrl()">СОКРАТИТЬ</button>
-
+        <button class="btn-3d" onclick="shortenUrl()" id="btnText">СОКРАТИТЬ</button>
+        <div class="loader" id="loader"></div>
         <div class="error-msg" id="errorMsg"></div>
 
         <div class="result-box" id="resultBox">
-            <label style="font-size: 12px; color: var(--accent-cyan); text-transform: uppercase; margin-bottom: 10px; display: block;">Ваша ссылка готова:</label>
-            <a href="#" target="_blank" class="result-link sound-hover" id="shortenedUrlText"></a>
-            <button class="btn-copy sound-btn" onclick="copyLink()">КОПИРОВАТЬ</button>
+            <a href="#" target="_blank" id="shortLink" style="color: var(--accent-cyan); text-decoration: none; font-weight: bold; font-size: 18px;"></a>
+            <br><br>
+            <button onclick="copyLink()" style="background: var(--accent-purple); color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer;">Копировать</button>
         </div>
     </div>
 </div>
 
 <script>
-    // --- АУДИО СИСТЕМА ---
-    let audioCtx = null;
-
-    function initAudio() {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // --- ЗВУКИ ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSnd(f, t, d, v) {
         if (audioCtx.state === 'suspended') audioCtx.resume();
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = t; o.frequency.setValueAtTime(f, audioCtx.currentTime);
+        g.gain.setValueAtTime(v, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + d);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(); o.stop(audioCtx.currentTime + d);
     }
 
-    function playSound(freq, type, dur, vol) {
-        if (!audioCtx) return;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        
-        gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(vol, audioCtx.currentTime + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
-        
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        
-        osc.start();
-        osc.stop(audioCtx.currentTime + dur);
-    }
-
-    document.addEventListener('click', initAudio, { once: true });
-
-    // Звуки интерфейса
-    document.querySelectorAll('.sound-btn').forEach(btn => {
-        btn.addEventListener('mouseenter', () => {
-            initAudio();
-            playSound(900, 'sine', 0.05, 0.05);
-        });
-        btn.addEventListener('mousedown', () => {
-            playSound(300, 'square', 0.1, 0.1);
-        });
-    });
-
-    document.querySelectorAll('.sound-hover').forEach(el => {
-        el.addEventListener('mouseenter', () => {
-            initAudio();
-            playSound(1200, 'sine', 0.03, 0.02);
-        });
-    });
-
-    // --- 3D ПАРАЛЛАКС ЭФФЕКТ ---
+    // --- 3D ЭФФЕКТ ---
     const panel = document.getElementById('mainPanel');
-    const scene = document.querySelector('.scene');
-
-    scene.addEventListener('mousemove', (e) => {
-        const rect = scene.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const xc = rect.width / 2;
-        const yc = rect.height / 2;
-        const dx = x - xc;
-        const dy = y - yc;
-        
-        // Ограничиваем угол наклона
-        const rotateY = (dx / xc) * 10; 
-        const rotateX = -(dy / yc) * 10;
-        
-        panel.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+    document.addEventListener('mousemove', (e) => {
+        const x = (window.innerWidth / 2 - e.pageX) / 20;
+        const y = (window.innerHeight / 2 - e.pageY) / 20;
+        panel.style.transform = `rotateY(${-x}deg) rotateX(${y}deg)`;
     });
 
-    scene.addEventListener('mouseleave', () => {
-        panel.style.transform = `rotateY(0deg) rotateX(0deg)`;
-    });
-
-    // --- ЛОГИКА СОКРАЩЕНИЯ ССЫЛОК ---
+    // --- ЛОГИКА ---
     async function shortenUrl() {
-        const longUrl = document.getElementById('longUrl').value.trim();
-        const customAlias = document.getElementById('customAlias').value.trim();
-        const errorMsg = document.getElementById('errorMsg');
-        const resultBox = document.getElementById('resultBox');
-        
-        errorMsg.style.display = 'none';
-        resultBox.style.display = 'none';
+        const url = document.getElementById('longUrl').value;
+        const alias = document.getElementById('customAlias').value;
+        const btn = document.getElementById('btnText');
+        const loader = document.getElementById('loader');
+        const error = document.getElementById('errorMsg');
+        const result = document.getElementById('resultBox');
 
-        if (!longUrl) {
-            showError("Пожалуйста, введите исходную ссылку.");
-            return;
-        }
+        if(!url) return;
 
-        // Формируем запрос к API is.gd
-        let apiUrl = `https://is.gd/create.php?format=json&url=${encodeURIComponent(longUrl)}`;
-        if (customAlias) {
-            apiUrl += `&shorturl=${encodeURIComponent(customAlias)}`;
-        }
+        // Сброс состояния
+        error.style.display = 'none';
+        result.style.display = 'none';
+        btn.style.display = 'none';
+        loader.style.display = 'block';
+        playSnd(440, 'sine', 0.1, 0.1);
+
+        // Используем прокси AllOrigins для обхода CORS
+        const target = `https://is.gd/create.php?format=json&url=${encodeURIComponent(url)}${alias ? '&shorturl='+encodeURIComponent(alias) : ''}`;
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(target)}`;
 
         try {
-            // Звук обработки
-            playSound(600, 'sawtooth', 0.2, 0.05);
-            
-            const response = await fetch(apiUrl);
+            const response = await fetch(proxyUrl);
             const data = await response.json();
+            const res = JSON.parse(data.contents); // Прокси возвращает JSON строкой в поле contents
 
-            if (data.shorturl) {
-                // Успех
-                playSound(1500, 'sine', 0.3, 0.1); // Звук успеха
-                const finalLink = data.shorturl;
-                const linkEl = document.getElementById('shortenedUrlText');
-                linkEl.textContent = finalLink;
-                linkEl.href = finalLink;
-                resultBox.style.display = 'block';
+            if (res.shorturl) {
+                document.getElementById('shortLink').textContent = res.shorturl;
+                document.getElementById('shortLink').href = res.shorturl;
+                result.style.display = 'block';
+                playSnd(880, 'sine', 0.2, 0.1);
             } else {
-                // Ошибка от API (например, имя уже занято)
-                showError(data.errormessage || "Ошибка при сокращении ссылки.");
+                error.textContent = res.errormessage || "Ошибка. Возможно имя уже занято.";
+                error.style.display = 'block';
+                playSnd(200, 'sawtooth', 0.3, 0.1);
             }
-        } catch (error) {
-            showError("Ошибка соединения. Проверьте интернет или отключите блокировщик рекламы.");
+        } catch (e) {
+            error.textContent = "Ошибка сети. Попробуйте еще раз.";
+            error.style.display = 'block';
+        } finally {
+            loader.style.display = 'none';
+            btn.style.display = 'block';
         }
-    }
-
-    function showError(text) {
-        playSound(200, 'sawtooth', 0.3, 0.1); // Звук ошибки
-        const errorMsg = document.getElementById('errorMsg');
-        errorMsg.textContent = "⚠ " + text;
-        errorMsg.style.display = 'block';
     }
 
     function copyLink() {
-        const textToCopy = document.getElementById('shortenedUrlText').textContent;
-        navigator.clipboard.writeText(textToCopy).then(() => {
-            const btn = document.querySelector('.btn-copy');
-            const originalText = btn.textContent;
-            btn.textContent = "СКОПИРОВАНО!";
-            btn.style.background = "#10b981"; // Зеленый цвет при успехе
-            playSound(2000, 'sine', 0.1, 0.05);
-            
-            setTimeout(() => {
-                btn.textContent = originalText;
-                btn.style.background = "var(--accent-purple)";
-            }, 2000);
-        });
+        const link = document.getElementById('shortLink').textContent;
+        navigator.clipboard.writeText(link);
+        playSnd(1200, 'sine', 0.1, 0.1);
+        alert("Ссылка скопирована!");
     }
 </script>
-
 </body>
 </html>

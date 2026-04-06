@@ -85,7 +85,6 @@
         }
         .btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #005a8f; }
 
-        /* --- СТИЛИ ДЛЯ ЛИЧНОГО КАБИНЕТА --- */
         .cabinet-btn {
             width: 100%; padding: 10px; background: transparent; border: 1px solid var(--accent-purple);
             border-radius: 10px; color: var(--accent-purple); font-weight: bold; cursor: pointer;
@@ -97,7 +96,6 @@
             display: none; margin-top: 15px; max-height: 180px; overflow-y: auto; text-align: left;
             border-top: 1px dashed #333; padding-top: 15px;
         }
-        /* Стилизация скроллбара */
         .dashboard::-webkit-scrollbar { width: 4px; }
         .dashboard::-webkit-scrollbar-thumb { background: var(--accent-purple); border-radius: 4px; }
         
@@ -126,7 +124,7 @@
 <div class="scene">
     <div class="panel" id="panel">
         
-        <div class="shortened-stats" title="Всего сокращено ссылок">
+        <div class="shortened-stats" title="Всего сокращено ссылок за все время">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
@@ -173,7 +171,7 @@
 </div>
 
 <script>
-    // --- ЛОГИКА СЧЕТЧИКОВ ---
+    // --- ГЛОБАЛЬНАЯ ЛОГИКА СЧЕТЧИКОВ ---
     async function updateVisitorCount() {
         const countElement = document.getElementById('visitCount');
         try {
@@ -185,11 +183,13 @@
         }
     }
 
+    // Эта функция теперь получает/обновляет общее количество ссылок ДЛЯ ВСЕХ
     async function updateShortenedCount(increment = false) {
         const countElement = document.getElementById('shortenedCount');
         try {
-            const endpoint = increment ? '/up' : '';
-            const response = await fetch(`https://api.counterapi.dev/v1/nexus_link_main/total_links${endpoint}`);
+            // Если increment true, вызываем /up для увеличения глобального счетчика
+            const action = increment ? 'up' : 'get';
+            const response = await fetch(`https://api.counterapi.dev/v1/nexus_link_global/total_links/${action}`);
             const data = await response.json();
             if (data.count !== undefined) countElement.textContent = data.count;
         } catch (error) {
@@ -200,14 +200,13 @@
     updateVisitorCount();
     updateShortenedCount();
 
-    // --- ЛОГИКА ЛИЧНОГО КАБИНЕТА (LOCAL STORAGE) ---
+    // --- ЛИЧНЫЙ КАБИНЕТ ---
     function loadHistory() {
         return JSON.parse(localStorage.getItem('nexus_user_links')) || [];
     }
 
     function saveToHistory(originalUrl, shortUrl) {
         let history = loadHistory();
-        // Добавляем в начало массива
         history.unshift({ original: originalUrl, short: shortUrl, date: new Date().toLocaleDateString() });
         localStorage.setItem('nexus_user_links', JSON.stringify(history));
         renderDashboard();
@@ -229,14 +228,11 @@
         const dash = document.getElementById('dashboard');
         const btn = document.querySelector('.cabinet-btn');
         let history = loadHistory();
-        
         btn.textContent = `Мой кабинет (${history.length} ссылок)`;
-
         if (history.length === 0) {
             dash.innerHTML = "<div style='text-align:center; opacity:0.5; margin-top: 10px;'>У вас пока нет сохраненных ссылок.</div>";
             return;
         }
-
         dash.innerHTML = history.map((item, index) => `
             <div class="history-item">
                 <button class="delete-btn" onclick="deleteHistoryItem(${index})" title="Удалить из истории">X</button>
@@ -248,14 +244,12 @@
             </div>
         `).join('');
     }
-    
-    // Инициализация кабинета при заходе на сайт (Авторизация браузера)
     renderDashboard();
 
-    // --- УЛУЧШЕННАЯ АУДИО СИСТЕМА И 3D ---
-    let audioCtx=null;function initAudio(){if(!audioCtx){audioCtx=new(window.AudioContext||window.webkitAudioContext)()}if(audioCtx.state==='suspended'){audioCtx.resume()}}function playSound(freq,type,dur,vol){if(!audioCtx)return;const osc=audioCtx.createOscillator();const gain=audioCtx.createGain();osc.type=type;osc.frequency.setValueAtTime(freq,audioCtx.currentTime);gain.gain.setValueAtTime(0.001,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(vol,audioCtx.currentTime+0.02);gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);osc.connect(gain);gain.connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+dur)}document.addEventListener('click',initAudio,{once:true});document.querySelectorAll('.btn, .sound-btn, .cabinet-btn').forEach(btn=>{btn.addEventListener('mouseenter',()=>{initAudio();playSound(800,'sine',0.1,0.1)});btn.addEventListener('mousedown',()=>{playSound(150,'square',0.15,0.2)})});document.querySelectorAll('.panel').forEach(card=>{card.addEventListener('mouseenter',()=>{initAudio();playSound(1200,'sine',0.05,0.03);setTimeout(()=>playSound(1600,'sine',0.04,0.02),50)});card.addEventListener('mousemove',(e)=>{const rect=card.getBoundingClientRect();const x=e.clientX-rect.left;const y=e.clientY-rect.top;const dx=x-rect.width/2;const dy=y-rect.height/2;card.style.transform=`rotateY(${dx/15}deg) rotateX(${-dy/15}deg) translateZ(20px)`});card.addEventListener('mouseleave',()=>{card.style.transform='rotateY(0deg) rotateX(0deg) translateZ(0px)'})});(function(){let link=document.querySelector("link[rel*='icon']");if(!link){link=document.createElement('link');link.rel='icon';document.head.appendChild(link)}link.href='favicon.ico';link.type='image/x-icon'})();
+    // --- АУДИО И 3D ---
+    let audioCtx=null;function initAudio(){if(!audioCtx){audioCtx=new(window.AudioContext||window.webkitAudioContext)()}if(audioCtx.state==='suspended'){audioCtx.resume()}}function playSound(freq,type,dur,vol){if(!audioCtx)return;const osc=audioCtx.createOscillator();const gain=audioCtx.createGain();osc.type=type;osc.frequency.setValueAtTime(freq,audioCtx.currentTime);gain.gain.setValueAtTime(0.001,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(vol,audioCtx.currentTime+0.02);gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);osc.connect(gain);gain.connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+dur)}document.addEventListener('click',initAudio,{once:true});document.querySelectorAll('.btn, .sound-btn, .cabinet-btn').forEach(btn=>{btn.addEventListener('mouseenter',()=>{initAudio();playSound(800,'sine',0.1,0.1)});btn.addEventListener('mousedown',()=>{playSound(150,'square',0.15,0.2)})});document.querySelectorAll('.panel').forEach(card=>{card.addEventListener('mouseenter',()=>{initAudio();playSound(1200,'sine',0.05,0.03);setTimeout(()=>playSound(1600,'sine',0.04,0.02),50)});card.addEventListener('mousemove',(e)=>{const rect=card.getBoundingClientRect();const x=e.clientX-rect.left;const y=e.clientY-rect.top;const dx=x-rect.width/2;const dy=y-rect.height/2;card.style.transform=`rotateY(${dx/15}deg) rotateX(${-dy/15}deg) translateZ(20px)`});card.addEventListener('mouseleave',()=>{card.style.transform='rotateY(0deg) rotateX(0deg) translateZ(0px)'})});
 
-    // --- ЛОГИКА СОКРАЩЕНИЯ ССЫЛОК ---
+    // --- СОКРАЩЕНИЕ ССЫЛОК ---
     async function shorten() {
         const url = document.getElementById('longUrl').value;
         const alias = document.getElementById('alias').value.trim();
@@ -268,7 +262,6 @@
         errDiv.style.display = 'none';
         loader.style.display = 'block';
 
-        // Добавлен параметр &logstats=1 для включения сбора статистики у is.gd
         let target = `https://is.gd/create.php?format=json&url=${encodeURIComponent(url)}&logstats=1`;
         if (alias) target += `&shorturl=${encodeURIComponent(alias)}`;
         const finalUrl = `https://corsproxy.io/?${encodeURIComponent(target)}`;
@@ -281,12 +274,10 @@
                 document.getElementById('finalLink').href = data.shorturl;
                 resDiv.style.display = 'block';
                 
+                // УВЕЛИЧИВАЕМ ГЛОБАЛЬНЫЙ СЧЕТЧИК ДЛЯ ВСЕХ
                 updateShortenedCount(true);
                 
-                // Сохраняем в личный кабинет
                 saveToHistory(url, data.shorturl);
-                
-                // Очищаем поля
                 document.getElementById('longUrl').value = '';
                 document.getElementById('alias').value = '';
             } else {

@@ -47,7 +47,7 @@
             position: relative; /* Для позиционирования счетчика */
         }
 
-        /* --- СТИЛИ ДЛЯ СЧЕТЧИКА ПОСЕЩЕНИЙ --- */
+        /* --- СТИЛИ ДЛЯ СЧЕТЧИКА ПОСЕЩЕНИЙ (СПРАВА) --- */
         .visitor-stats {
             position: absolute;
             top: 20px;
@@ -74,6 +74,35 @@
             width: 14px;
             height: 14px;
             stroke: var(--accent-cyan);
+        }
+
+        /* --- СТИЛИ ДЛЯ СЧЕТЧИКА СОКРАЩЕНИЙ (СЛЕВА) --- */
+        .shortened-stats {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--accent-purple);
+            font-size: 11px;
+            font-weight: bold;
+            opacity: 0.8;
+            transition: 0.3s;
+            background: rgba(188, 19, 254, 0.1);
+            padding: 5px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(188, 19, 254, 0.2);
+            text-shadow: 0 0 5px rgba(188, 19, 254, 0.5);
+        }
+        .shortened-stats:hover {
+            opacity: 1;
+            box-shadow: 0 0 10px rgba(188, 19, 254, 0.3);
+        }
+        .shortened-stats svg {
+            width: 14px;
+            height: 14px;
+            stroke: var(--accent-purple);
         }
 
         h1 {
@@ -111,6 +140,14 @@
 <div class="scene">
     <div class="panel" id="panel">
         
+        <div class="shortened-stats" title="Всего сокращено ссылок">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+            <span id="shortenedCount">...</span>
+        </div>
+
         <div class="visitor-stats" title="Посещений за 30 дней">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -146,23 +183,38 @@
 </div>
 
 <script>
-    // --- ЛОГИКА СЧЕТЧИКА ---
+    // --- ЛОГИКА СЧЕТЧИКОВ ---
     async function updateVisitorCount() {
         const countElement = document.getElementById('visitCount');
         try {
-            // Используем публичный API для хранения счетчика. 
-            // Идентификатор 'nexus_link_main' уникален для вашего проекта.
             const response = await fetch('https://api.counterapi.dev/v1/nexus_link_main/visits/up');
             const data = await response.json();
             countElement.textContent = data.count;
         } catch (error) {
-            // Если API временно недоступен, показываем заглушку
             countElement.textContent = "100+";
             console.error("Ошибка загрузки счетчика", error);
         }
     }
-    // Запускаем счетчик при загрузке страницы
+
+    async function updateShortenedCount(increment = false) {
+        const countElement = document.getElementById('shortenedCount');
+        try {
+            // Если increment true, прибавляем +1 (/up), если false - просто получаем текущее значение
+            const endpoint = increment ? '/up' : '';
+            const response = await fetch(`https://api.counterapi.dev/v1/nexus_link_main/total_links${endpoint}`);
+            const data = await response.json();
+            if (data.count !== undefined) {
+                countElement.textContent = data.count;
+            }
+        } catch (error) {
+            if (!increment && countElement.textContent === "...") countElement.textContent = "0";
+            console.error("Ошибка загрузки счетчика ссылок", error);
+        }
+    }
+
+    // Запускаем счетчики при загрузке страницы
     updateVisitorCount();
+    updateShortenedCount(); // Получаем количество сокращенных ссылок без накрутки
 
     // --- УЛУЧШЕННАЯ АУДИО СИСТЕМА И 3D ---
     let audioCtx=null;function initAudio(){if(!audioCtx){audioCtx=new(window.AudioContext||window.webkitAudioContext)()}if(audioCtx.state==='suspended'){audioCtx.resume()}}function playSound(freq,type,dur,vol){if(!audioCtx)return;const osc=audioCtx.createOscillator();const gain=audioCtx.createGain();osc.type=type;osc.frequency.setValueAtTime(freq,audioCtx.currentTime);gain.gain.setValueAtTime(0.001,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(vol,audioCtx.currentTime+0.02);gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);osc.connect(gain);gain.connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+dur)}document.addEventListener('click',initAudio,{once:true});document.querySelectorAll('.btn, .sound-btn').forEach(btn=>{btn.addEventListener('mouseenter',()=>{initAudio();playSound(800,'sine',0.1,0.1)});btn.addEventListener('mousedown',()=>{playSound(150,'square',0.15,0.2)})});document.querySelectorAll('.panel').forEach(card=>{card.addEventListener('mouseenter',()=>{initAudio();playSound(1200,'sine',0.05,0.03);setTimeout(()=>playSound(1600,'sine',0.04,0.02),50)});card.addEventListener('mousemove',(e)=>{const rect=card.getBoundingClientRect();const x=e.clientX-rect.left;const y=e.clientY-rect.top;const dx=x-rect.width/2;const dy=y-rect.height/2;card.style.transform=`rotateY(${dx/15}deg) rotateX(${-dy/15}deg) translateZ(20px)`});card.addEventListener('mouseleave',()=>{card.style.transform='rotateY(0deg) rotateX(0deg) translateZ(0px)'})});(function(){let link=document.querySelector("link[rel*='icon']");if(!link){link=document.createElement('link');link.rel='icon';document.head.appendChild(link)}link.href='favicon.ico';link.type='image/x-icon'})();
@@ -191,6 +243,9 @@
                 document.getElementById('finalLink').textContent = data.shorturl;
                 document.getElementById('finalLink').href = data.shorturl;
                 resDiv.style.display = 'block';
+                
+                // Увеличиваем счетчик сокращенных ссылок ТОЛЬКО при успешном создании
+                updateShortenedCount(true);
             } else {
                 throw new Error(data.errormessage || "Ошибка");
             }
